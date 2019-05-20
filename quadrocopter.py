@@ -1,9 +1,7 @@
 import pybullet as p
-import pybullet_data
 import time
 
 p.connect(p.GUI)
-p.setAdditionalSearchPath(pybullet_data.getDataPath())
 p.loadURDF("data/plane.urdf")
 p.setGravity(0, 0, -10)
 copter = p.loadURDF("data/quadrotor.urdf")
@@ -40,22 +38,22 @@ while (1):
   for k, v in keys.items():
 
     if (k == p.B3G_RIGHT_ARROW and (v & p.KEY_WAS_TRIGGERED)):
-      force1Diff = 0.5
+      force1Diff = 0.25
       #turn = -0.5
     if (k == p.B3G_RIGHT_ARROW and (v & p.KEY_WAS_RELEASED)):
       force1Diff = 0.
       #turn = 0
     if (k == p.B3G_LEFT_ARROW and (v & p.KEY_WAS_TRIGGERED)):
-      force2Diff = 0.5
+      force2Diff = 0.25
     if (k == p.B3G_LEFT_ARROW and (v & p.KEY_WAS_RELEASED)):
       force2Diff = 0.
 
     if (k == p.B3G_UP_ARROW and (v & p.KEY_WAS_TRIGGERED)):
-      force3Diff = 0.5
+      force3Diff = 0.25
     if (k == p.B3G_UP_ARROW and (v & p.KEY_WAS_RELEASED)):
       force3Diff = 0.
     if (k == p.B3G_DOWN_ARROW and (v & p.KEY_WAS_TRIGGERED)):
-      force4Diff = 0.5
+      force4Diff = 0.25
     if (k == p.B3G_DOWN_ARROW and (v & p.KEY_WAS_RELEASED)):
       force4Diff = 0.
 
@@ -65,7 +63,6 @@ while (1):
   force3 = [0., 0., force3Diff + baseForce]
   force4 = [0., 0., force4Diff + baseForce]
 
-  #cameraYaw = cameraYaw + turn
 
   p.applyExternalForce(copter, -1, force1, [ 0,  2.5, 0], flags=p.LINK_FRAME)
   p.applyExternalForce(copter, -1, force2, [ 0, -2.5, 0], flags=p.LINK_FRAME)
