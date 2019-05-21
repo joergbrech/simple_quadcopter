@@ -4,44 +4,43 @@ import time
 
 def tunnel(length, width, wallWidth = 0.05, position=[0., 0., 0.], orientation=[0., 0., 0., 1.]):
     # create a rectangular tunnel as a building block of an obstacle parcour
-    for i in [0,1]:
+    wall1_c = p.createCollisionShape(p.GEOM_BOX, halfExtents=[length / 2, width / 2 + wallWidth, wallWidth / 2])
+    wall2_c = p.createCollisionShape(p.GEOM_BOX, halfExtents=[length / 2, width / 2 + wallWidth, wallWidth / 2])
+    wall3_c = p.createCollisionShape(p.GEOM_BOX, halfExtents=[length / 2, wallWidth / 2, width / 2])
+    wall4_c = p.createCollisionShape(p.GEOM_BOX, halfExtents=[length / 2, wallWidth / 2, width / 2])
 
-        batchPositions = []
+    visualShapeId = p.createVisualShapeArray(shapeTypes=[p.GEOM_BOX] * 4,
+                                             halfExtents=[[length / 2, width / 2 + wallWidth, wallWidth / 2],
+                                                          [length / 2, width / 2 + wallWidth, wallWidth / 2],
+                                                          [length / 2, wallWidth / 2, width / 2],
+                                                          [length / 2, wallWidth / 2, width / 2]],
+                                             visualFramePositions=[[length / 2, 0., -width / 2 - wallWidth / 2],
+                                                                   [length / 2, 0., width / 2 + wallWidth / 2],
+                                                                   [length / 2, -width / 2 - wallWidth / 2, 0.],
+                                                                   [length / 2, width / 2 + wallWidth / 2, 0.]]
+                                             )
+    collisionShapeId = p.createCollisionShapeArray(shapeTypes=[p.GEOM_BOX] * 4,
+                                                   halfExtents=[[length / 2, width / 2 + wallWidth, wallWidth / 2],
+                                                                [length / 2, width / 2 + wallWidth, wallWidth / 2],
+                                                                [length / 2, wallWidth / 2, width / 2],
+                                                                [length / 2, wallWidth / 2, width / 2]],
+                                                   collisionFramePositions=[[length / 2, 0., -width / 2 - wallWidth / 2],
+                                                                            [length / 2, 0., width / 2 + wallWidth / 2],
+                                                                            [length / 2, -width / 2 - wallWidth / 2, 0.],
+                                                                            [length / 2, width / 2 + wallWidth / 2, 0.]]
+                                                   )
 
-        if i % 2 == 0:
+    mb = p.createMultiBody(baseMass=0.,
+                           baseInertialFramePosition=[0, 0, 0],
+                           baseCollisionShapeIndex=collisionShapeId,
+                           baseVisualShapeIndex=visualShapeId,
+                           basePosition=position,
+                           baseOrientation=orientation,
+                           useMaximalCoordinates=False)
+    p.changeVisualShape(mb, -1, rgbaColor=[1, 1, 1, 0.5], specularColor=[0.4, 0.4, 0])
+    return mb
 
-            halfExtents=[length / 2, width / 2 + wallWidth, wallWidth / 2]
 
-            # lower wall
-            batchPositions.append([length / 2, 0., -width / 2 - wallWidth / 2])
-
-            # upper wall
-            batchPositions.append([length / 2, 0., width / 2 + wallWidth / 2])
-        else:
-
-            halfExtents = [length / 2, wallWidth / 2, width / 2]
-
-            # left wall
-            batchPositions.append([length / 2, -width / 2 - wallWidth / 2, 0.])
-
-            # right wall
-            batchPositions.append([length / 2, width / 2 + wallWidth / 2, 0.])
-
-        w = p.createCollisionShape(p.GEOM_BOX, halfExtents=halfExtents)
-        v = p.createVisualShape(shapeType=p.GEOM_BOX,
-                                halfExtents=halfExtents,
-                                rgbaColor=[1, 1, 1, 0.5],
-                                specularColor=[0.4, .4, 0])
-
-        b = p.createMultiBody(baseMass=0,
-                              baseInertialFramePosition=[0, 0, 0],
-                              baseCollisionShapeIndex=w,
-                              baseVisualShapeIndex=v,
-                              basePosition=[0., 0., 0.],
-                              baseOrientation=[0., 0., 0., 1.],
-                              batchPositions=batchPositions,
-                              useMaximalCoordinates=True)
-        p.resetBasePositionAndOrientation(b, position, orientation)
 
 
 def corner(width, wallWidth=0.05, position=[0., 0., 0.], orientation=[0., 0., 0., 1.]):
@@ -51,8 +50,14 @@ def corner(width, wallWidth=0.05, position=[0., 0., 0.], orientation=[0., 0., 0.
 
 
 def parcour():
+    # width of the tunnels
+    width = 1
+
     # create tunnel that starts at (-1,0,0)
-    tunnel(length=5., width=1, position=[-1., 0., 0.])
+    b = tunnel(length=5., width=width, position=[-1, 0., 0.])
+
+    # create a corner at (4,0,0)
+    corner(width=width, position=[4., 0., 0.])
 
 
 if __name__ == '__main__':
