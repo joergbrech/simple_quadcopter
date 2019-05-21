@@ -1,5 +1,6 @@
 import pybullet as p
 import time
+import math
 
 
 def tunnel(length, width, wallWidth = 0.05, position=[0., 0., 0.], orientation=[0., 0., 0., 1.]):
@@ -53,11 +54,18 @@ def parcour():
     # width of the tunnels
     width = 1
 
-    # create tunnel that starts at (-1,0,0)
-    b = tunnel(length=5., width=width, position=[-1, 0., 0.])
+    ornx = [0., 0., 0., 1.]
+    orny = p.getQuaternionFromAxisAngle(axis=[0, 0, 1], angle=math.pi / 2)
+    ornz = p.getQuaternionFromAxisAngle(axis=[0, 1, 0], angle=math.pi / 2)
 
-    # create a corner at (4,0,0)
-    corner(width=width, position=[4., 0., 0.])
+    tunnel(length=5., width=width, position=[-1, 0., 0.], orientation=ornx)
+    #corner(width=width, position=[4., 0., 0.])
+    tunnel(length=2., width=width, position=[4.5, 0.0, 2.5], orientation=ornz)
+    #corner(width=width, position=[4., 0., 0.])
+    tunnel(length=4., width=width, position=[4.5, 0.5, 3.], orientation=orny)
+    #corner(width=width, position=[4., 0., 0.])
+    tunnel(length=4., width=width, position=[5.0, 5.0, 3.], orientation=ornx)
+
 
 
 if __name__ == '__main__':
@@ -78,8 +86,10 @@ if __name__ == '__main__':
     cameraYaw = 35
     cameraPitch = -35
 
-    baseForceSlider = p.addUserDebugParameter("baseForce", 0, 5, 0)
+    cameraDistanceSlider = p.addUserDebugParameter("cameraDistance",0.5,100,1)
+    cameraYawSlider = p.addUserDebugParameter("cameraYaw", 0, 360, 35)
 
+    baseForceSlider = p.addUserDebugParameter("baseForce", 0, 5, 0)
     force1 = [0, 0, 0]
     force2 = [0, 0, 0]
     force3 = [0, 0, 0]
@@ -94,6 +104,8 @@ if __name__ == '__main__':
         pos, orn = p.getBasePositionAndOrientation(copter)
 
         cameraTargetPosition = pos
+        cameraDistance = p.readUserDebugParameter(cameraDistanceSlider)
+        cameraYaw = p.readUserDebugParameter(cameraYawSlider)
         p.resetDebugVisualizerCamera(cameraDistance, cameraYaw, cameraPitch, cameraTargetPosition)
 
         keys = p.getKeyboardEvents()
