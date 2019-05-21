@@ -7,9 +7,9 @@ p.setGravity(0, 0, -10)
 copter = p.loadURDF("data/quadrotor.urdf")
 p.resetBasePositionAndOrientation(copter, [0, 0, 1], [0, 0, 0, 1])
 p.changeDynamics(copter, -1, linearDamping=0.9)
-p.changeVisualShape(copter, -1, rgbaColor=[0.4, 0.4, 0.4, 1])
-forward = 0
-turn = 0
+
+color = [0.4, 0.4, 0.4, 1]
+contactcolor = [1., 0., 0., 1]
 
 forwardVec = [2, 0, 0]
 cameraDistance = 1
@@ -68,6 +68,11 @@ while (1):
   p.applyExternalForce(copter, -1, force2, [ 0, -2.5, 0], flags=p.LINK_FRAME)
   p.applyExternalForce(copter, -1, force3, [ 2.5,  0, 0], flags=p.LINK_FRAME)
   p.applyExternalForce(copter, -1, force4, [-2.5,  0, 0], flags=p.LINK_FRAME)
+
+  if p.getContactPoints(copter):
+    p.changeVisualShape(copter, -1, rgbaColor=contactcolor)
+  else:
+    p.changeVisualShape(copter, -1, rgbaColor=color)
 
   p.stepSimulation()
   time.sleep(1. / 240.)
