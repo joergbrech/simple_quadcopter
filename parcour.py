@@ -4,36 +4,29 @@ import math
 
 def tunnel(length, width, wall_width = 0.05, position=[0., 0., 0.], orientation=[0., 0., 0., 1.]):
     # create a rectangular tunnel as a building block of an obstacle parcour
-    wall1_c = p.createCollisionShape(p.GEOM_BOX, halfExtents=[length / 2, width / 2 + wall_width, wall_width / 2])
-    wall2_c = p.createCollisionShape(p.GEOM_BOX, halfExtents=[length / 2, width / 2 + wall_width, wall_width / 2])
-    wall3_c = p.createCollisionShape(p.GEOM_BOX, halfExtents=[length / 2, wall_width / 2, width / 2])
-    wall4_c = p.createCollisionShape(p.GEOM_BOX, halfExtents=[length / 2, wall_width / 2, width / 2])
 
-    visualShapeId = p.createVisualShapeArray(shapeTypes=[p.GEOM_BOX] * 4,
-                                             halfExtents=[[length / 2, width / 2 + wall_width, wall_width / 2],
-                                                          [length / 2, width / 2 + wall_width, wall_width / 2],
-                                                          [length / 2, wall_width / 2, width / 2],
-                                                          [length / 2, wall_width / 2, width / 2]],
-                                             visualFramePositions=[[0, 0., -width / 2 - wall_width / 2],
-                                                                   [0, 0., width / 2 + wall_width / 2],
-                                                                   [0, -width / 2 - wall_width / 2, 0.],
-                                                                   [0, width / 2 + wall_width / 2, 0.]]
-                                             )
-    collisionShapeId = p.createCollisionShapeArray(shapeTypes=[p.GEOM_BOX] * 4,
-                                                   halfExtents=[[length / 2, width / 2 + wall_width, wall_width / 2],
-                                                                [length / 2, width / 2 + wall_width, wall_width / 2],
-                                                                [length / 2, wall_width / 2, width / 2],
-                                                                [length / 2, wall_width / 2, width / 2]],
-                                                   collisionFramePositions=[[0., 0., -width / 2 - wall_width / 2],
-                                                                            [0., 0., width / 2 + wall_width / 2],
-                                                                            [0., -width / 2 - wall_width / 2, 0.],
-                                                                            [0., width / 2 + wall_width / 2, 0.]]
-                                                   )
+    half_extents = [[length / 2, width / 2 + wall_width, wall_width / 2],
+                    [length / 2, width / 2 + wall_width, wall_width / 2],
+                    [length / 2, wall_width / 2, width / 2],
+                    [length / 2, wall_width / 2, width / 2]]
+    positions = [[0, 0., -width / 2 - wall_width / 2],
+                 [0, 0., width / 2 + wall_width / 2],
+                 [0, -width / 2 - wall_width / 2, 0.],
+                [0, width / 2 + wall_width / 2, 0.]]
+
+    visual_shape_id = p.createVisualShapeArray(shapeTypes=[p.GEOM_BOX] * 4,
+                                               halfExtents=half_extents,
+                                               visualFramePositions=positions
+                                               )
+    collision_shape_id = p.createCollisionShapeArray(shapeTypes=[p.GEOM_BOX] * 4,
+                                                     halfExtents=half_extents,
+                                                     collisionFramePositions=positions
+                                                     )
 
     mb = p.createMultiBody(baseMass=0.,
                            baseInertialFramePosition=[0, 0, 0],
-                           baseCollisionShapeIndex=collisionShapeId,
-                           baseVisualShapeIndex=visualShapeId,
+                           baseCollisionShapeIndex=collision_shape_id,
+                           baseVisualShapeIndex=visual_shape_id,
                            basePosition=position,
                            baseOrientation=orientation,
                            useMaximalCoordinates=False)
@@ -41,12 +34,35 @@ def tunnel(length, width, wall_width = 0.05, position=[0., 0., 0.], orientation=
     return mb
 
 
-
-
 def corner(width, wall_width=0.05, position=[0., 0., 0.], orientation=[0., 0., 0., 1.]):
     # create a corner (cube open at neg. x and pos. z) as a building block of an obstacle parcour
-    # TODO
-    pass
+    half_extents = [[width / 2, width / 2 + wall_width, wall_width / 2],
+                    [width / 2, wall_width / 2, width / 2],
+                    [width / 2, wall_width / 2, width / 2],
+                    [wall_width / 2, width / 2 + wall_width, width / 2]]
+    positions = [[0, 0., -width / 2 - wall_width / 2],
+                 [0, -width / 2 - wall_width / 2, 0.],
+                 [0, width / 2 + wall_width / 2, 0.],
+                 [width/2 + wall_width / 2, 0., 0.]]
+
+    visual_shape_id = p.createVisualShapeArray(shapeTypes=[p.GEOM_BOX] * 4,
+                                               halfExtents=half_extents,
+                                               visualFramePositions=positions
+                                               )
+    collision_shape_id = p.createCollisionShapeArray(shapeTypes=[p.GEOM_BOX] * 4,
+                                                     halfExtents=half_extents,
+                                                     collisionFramePositions=positions
+                                                     )
+
+    mb = p.createMultiBody(baseMass=0.,
+                           baseInertialFramePosition=[0, 0, 0],
+                           baseCollisionShapeIndex=collision_shape_id,
+                           baseVisualShapeIndex=visual_shape_id,
+                           basePosition=position,
+                           baseOrientation=orientation,
+                           useMaximalCoordinates=False)
+    p.changeVisualShape(mb, -1, rgbaColor=[1, 1, 1, 0.5], specularColor=[0.4, 0.4, 0])
+    return mb
 
 
 def parcour():
@@ -55,14 +71,24 @@ def parcour():
     # width of the tunnels
     width = 1
 
-    ornx = [0., 0., 0., 1.]
-    orny = p.getQuaternionFromAxisAngle(axis=[0, 0, 1], angle=math.pi / 2)
-    ornz = p.getQuaternionFromAxisAngle(axis=[0, 1, 0], angle=math.pi / 2)
+    # create some orientation quaternions to rotate tunnels and corners
+    tunnel_ornx = [0., 0., 0., 1.]
+    tunnel_orny = p.getQuaternionFromAxisAngle(axis=[0, 0, 1], angle=math.pi / 2)
+    tunnel_ornz = p.getQuaternionFromAxisAngle(axis=[0, 1, 0], angle=math.pi / 2)
+    corner_negxposz = [0., 0., 0., 1.]
+    corner_negzposy = p.getQuaternionFromEuler([math.pi, 0.0, -math.pi / 2])
+    corner_negyposx = p.getQuaternionFromEuler([math.pi/2, 0.0, math.pi / 2])  # TODO
 
-    tunnel(length=5., width=width, position=[1.5, 0., 2.], orientation=ornx)
-    #corner(width=width, position=[4., 0., 0.])
-    tunnel(length=2., width=width, position=[4.5, 0.0, 3.5], orientation=ornz)
-    #corner(width=width, position=[4., 0., 0.])
-    tunnel(length=4., width=width, position=[4.5, 2.5, 5], orientation=orny)
-    #corner(width=width, position=[4., 0., 0.])
-    tunnel(length=4., width=width, position=[7.0, 5.0, 5.], orientation=ornx)
+    print('quaternion for 90 deg rotation around z = {}'.format(
+        p.getQuaternionFromAxisAngle(axis=[0, 0, 1], angle=math.pi / 2)))
+    print('quaternion for 180 deg rotation around y = {}'.format(
+        p.getQuaternionFromAxisAngle(axis=[0, 1, 0], angle=math.pi)))
+
+    # create the parcour
+    tunnel(length=5., width=width, position=[1.5, 0., 2.], orientation=tunnel_ornx)
+    corner(width=width, position=[4.5, 0., 2.], orientation=corner_negxposz)
+    tunnel(length=2., width=width, position=[4.5, 0.0, 3.5], orientation=tunnel_ornz)
+    corner(width=width, position=[4.5, 0., 5.0], orientation=corner_negzposy)
+    tunnel(length=4., width=width, position=[4.5, 2.5, 5], orientation=tunnel_orny)
+    corner(width=width, position=[4.5, 5., 5.], orientation=corner_negyposx)
+    tunnel(length=4., width=width, position=[7.0, 5.0, 5.], orientation=tunnel_ornx)
