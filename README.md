@@ -13,4 +13,19 @@ pip install pybullet
 
 ## Usage
 
-Use the slider to add a "base force" equally to all rotors. Use the arrow keys to adjust the force of each rotor individually.
+```bash
+python quadrocopter.py
+```
+
+**Controls:**
+ - Use the slider to add a "base force" equally to all rotors. 
+ - Use the arrow keys to adjust the force of each rotor individually.
+ 
+ ### Reenforcement Learning Challenge
+ 
+ Steer the quadrocopter to the position `[8.5, 5., 5.]` without collision
+ and hover at the end point for 5 seconds.
+ 
+ ### To Do
+ 
+ The quadrocopter needs to be equipped with some distance sensors
