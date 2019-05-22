@@ -14,6 +14,9 @@ if __name__ == '__main__':
     p.resetBasePositionAndOrientation(copter, [0, 0, 2.], [0, 0, 0, 1])
     p.changeDynamics(copter, -1, linearDamping=0.9)
 
+    # create "ground"
+    p.loadURDF("data/plane.urdf")
+
     # create parcour
     parcour()
 
@@ -45,7 +48,7 @@ if __name__ == '__main__':
         cameraYaw = p.readUserDebugParameter(cameraYawSlider)
         p.resetDebugVisualizerCamera(cameraDistance, cameraYaw, cameraPitch, cameraTargetPosition)
 
-        # read user input to stear quadrocopter
+        # read user input to steer quadrocopter
         keys = p.getKeyboardEvents()
         for k, v in keys.items():
 
