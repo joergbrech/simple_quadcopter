@@ -2,7 +2,7 @@ import pybullet as p
 from parcour import parcour
 
 
-def sensor(body_idx, directions=[], range=2, draw_rays=True):
+def read_sensors(body_idx, directions=[], range=2, draw_rays=True):
     # measure the distance along rays cast into the directions specified in the array dirs from body with index
     # body_idx. The ray's length can be modified with the range argument. If directions is empty, six rays are cast
     # into the x-, x+, y-, y+, z-, z+ directions from the body's center of mass in local body coordinates
@@ -19,7 +19,7 @@ def sensor(body_idx, directions=[], range=2, draw_rays=True):
                   pos[1] + range*local_dir[1],
                   pos[2] + range*local_dir[2]]
         ray_info = p.rayTest(pos, ray_to)
-        sensor_data.append(ray_info[0][2]/range)
+        sensor_data.append(ray_info[0][2]*range)
         if draw_rays:
             if ray_info[0][0]>0:
                 draw_to = ray_info[0][3]
@@ -65,12 +65,11 @@ if __name__ == '__main__':
     # simulation loop
     while True:
 
-        pos, orn = p.getBasePositionAndOrientation(copter)
-
         # read out distance sensors of quadrocopter
-        sensor_data=sensor(copter)
+        sensor_data = read_sensors(copter)
 
         # reset camera position
+        pos, orn = p.getBasePositionAndOrientation(copter)
         cameraTargetPosition = pos
         cameraPitch = p.readUserDebugParameter(cameraPitchSlider)
         cameraDistance = p.readUserDebugParameter(cameraDistanceSlider)
