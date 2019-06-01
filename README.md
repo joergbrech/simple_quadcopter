@@ -18,8 +18,8 @@ python quadrocopter.py
 ```
 
 **Controls:**
- - Use the slider to add a "base force" equally to all rotors. 
- - Use the arrow keys to adjust the force of each rotor individually.
+ - Press `n` and `m` to decrease (resp. increase) a "base force" equally for all rotors.
+ - Use the arrow keys `UP`, `DOWN`, `LEFT` and `RIGHT` to momentarily increase the force of an individual rotor.
  
  ### Reinforcement Learning Challenge
  

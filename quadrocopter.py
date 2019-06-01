@@ -8,7 +8,7 @@ def read_sensors(body_idx, directions=[], range=2, draw_rays=True):
     # into the x-, x+, y-, y+, z-, z+ directions from the body's center of mass in local body coordinates
 
     if not directions:
-       directions=[[-1, 0, 0], [1, 0, 0], [0, -1, 0], [0, 1, 0], [0, 0, -1], [0, 0, 1]]
+        directions = [[-1, 0, 0], [1, 0, 0], [0, -1, 0], [0, 1, 0], [0, 0, -1], [0, 0, 1]]
 
     sensor_data = []
     pos, orn = p.getBasePositionAndOrientation(body_idx)
@@ -21,7 +21,7 @@ def read_sensors(body_idx, directions=[], range=2, draw_rays=True):
         ray_info = p.rayTest(pos, ray_to)
         sensor_data.append(ray_info[0][2]*range)
         if draw_rays:
-            if ray_info[0][0]>0:
+            if ray_info[0][0] > 0:
                 draw_to = ray_info[0][3]
             else:
                 draw_to = ray_to
@@ -56,7 +56,7 @@ if __name__ == '__main__':
     cameraYawSlider = p.addUserDebugParameter("cameraYaw", 0, 360, 35)
 
     # initialize force variables for the four rotors
-    baseForceSlider = p.addUserDebugParameter("baseForce", 0, 5, 0)
+    baseForce = 0.
     force1Diff = 0.
     force2Diff = 0.
     force3Diff = 0.
@@ -98,8 +98,14 @@ if __name__ == '__main__':
             if k == p.B3G_DOWN_ARROW and (v & p.KEY_WAS_RELEASED):
                 force4Diff = 0.
 
+            if k == ord('n') and (v & p.KEY_IS_DOWN):
+                baseForce = max(0, baseForce - 0.1)
+                print("BaseForce = {}".format(baseForce))
+            if k == ord('m') and (v & p.KEY_IS_DOWN):
+                baseForce = min(10, baseForce + 0.1)
+                print("BaseForce = {}".format(baseForce))
+
         # apply force to the four rotors
-        baseForce = p.readUserDebugParameter(baseForceSlider)
         force1 = [0., 0., force1Diff + baseForce]
         force2 = [0., 0., force2Diff + baseForce]
         force3 = [0., 0., force3Diff + baseForce]
