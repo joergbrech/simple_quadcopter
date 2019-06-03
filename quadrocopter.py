@@ -31,8 +31,14 @@ def read_sensors(body_idx, directions=[], range=2, draw_rays=True):
 
 if __name__ == '__main__':
 
-    # initialize GUI and physics
-    p.connect(p.GUI)
+    useGUI = True
+
+    # initialize GUI
+    if useGUI:
+        p.connect(p.GUI)
+    else:
+        p.connect(p.DIRECT)
+
     p.setGravity(0, 0, -10)
 
     # initialize the  quadrocopter and place into the world
@@ -51,9 +57,10 @@ if __name__ == '__main__':
     contactColor = [1., 0., 0., 1]
 
     # create some sliders to manipulate the camera view
-    cameraPitchSlider = p.addUserDebugParameter("cameraPitch", -90, 90, -35)
-    cameraDistanceSlider = p.addUserDebugParameter("cameraDistance", 0.5, 100, 5)
-    cameraYawSlider = p.addUserDebugParameter("cameraYaw", 0, 360, 35)
+    if useGUI:
+        cameraPitchSlider = p.addUserDebugParameter("cameraPitch", -90, 90, -35)
+        cameraDistanceSlider = p.addUserDebugParameter("cameraDistance", 0.5, 100, 5)
+        cameraYawSlider = p.addUserDebugParameter("cameraYaw", 0, 360, 35)
 
     # initialize force variables for the four rotors
     baseForce = 0.
@@ -69,12 +76,13 @@ if __name__ == '__main__':
         sensor_data = read_sensors(copter)
 
         # reset camera position
-        pos, orn = p.getBasePositionAndOrientation(copter)
-        cameraTargetPosition = pos
-        cameraPitch = p.readUserDebugParameter(cameraPitchSlider)
-        cameraDistance = p.readUserDebugParameter(cameraDistanceSlider)
-        cameraYaw = p.readUserDebugParameter(cameraYawSlider)
-        p.resetDebugVisualizerCamera(cameraDistance, cameraYaw, cameraPitch, cameraTargetPosition)
+        if useGUI:
+            pos, orn = p.getBasePositionAndOrientation(copter)
+            cameraTargetPosition = pos
+            cameraPitch = p.readUserDebugParameter(cameraPitchSlider)
+            cameraDistance = p.readUserDebugParameter(cameraDistanceSlider)
+            cameraYaw = p.readUserDebugParameter(cameraYawSlider)
+            p.resetDebugVisualizerCamera(cameraDistance, cameraYaw, cameraPitch, cameraTargetPosition)
 
         # read user input to steer quadrocopter
         keys = p.getKeyboardEvents()
